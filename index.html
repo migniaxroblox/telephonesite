@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPhone iOS - Sunset RP</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            width: 100vw; height: 100vh; background: #000;
+            display: flex; justify-content: center; align-items: center; overflow: hidden;
+        }
+
+        .iphone-screen {
+            width: 375px; height: 812px;
+            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=375&auto=format&fit=crop') center/cover;
+            position: relative; overflow: hidden;
+            box-shadow: 0 0 50px rgba(255,255,255,0.05);
+        }
+
+        /* BARRE DE STATUT & ILE DYNAMIQUE */
+        .status-bar { height: 48px; display: flex; justify-content: space-between; align-items: center; padding: 0 24px; font-size: 14px; font-weight: 600; z-index: 999; color: white; position: absolute; width: 100%; top: 0; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        .dynamic-island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 120px; height: 32px; background: #000; border-radius: 20px; z-index: 1000; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+
+        /* ECRAN DE VERROUILLAGE (VRAIE CONNEXION STEAM) */
+        #lock-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: inherit; z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+        }
+        .lock-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.3); z-index: -1; backdrop-filter: blur(5px); }
+        .lock-top { margin-top: 90px; text-align: center; color: white; }
+        .lock-date { font-size: 20px; font-weight: 500; margin-bottom: -5px; }
+        .lock-time-big { font-size: 85px; font-weight: 700; letter-spacing: -2px; }
+
+        .login-widget {
+            margin-bottom: 60px; width: 85%; background: rgba(255,255,255,0.15); backdrop-filter: blur(20px);
+            border-radius: 24px; padding: 25px 20px; text-align: center; border: 1px solid rgba(255,255,255,0.2);
+        }
+        .login-widget h3 { color: white; font-weight: 600; font-size: 16px; margin-bottom: 15px; }
+
+        /* Vrai lien Steam */
+        .steam-link {
+            background: #171a21; color: white; border: 1px solid #3c3f46; border-radius: 12px;
+            padding: 14px; width: 100%; font-size: 16px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            text-decoration: none; transition: transform 0.1s;
+        }
+        .steam-link:active { transform: scale(0.96); background: #1b2838; }
+        .steam-icon { width: 22px; height: 22px; fill: #fff; }
+
+        /* ECRAN D'ACCUEIL AVEC TOUTES LES APPLIS */
+        .home-screen { padding-top: 60px; height: 100%; display: flex; flex-direction: column; }
+        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px 14px; padding: 20px; flex-grow: 1; align-content: start; }
+        .app { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .app-icon { width: 62px; height: 62px; border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.1s; }
+        .app:active .app-icon { transform: scale(0.85); filter: brightness(0.8); }
+        .app-icon svg { width: 32px; height: 32px; fill: #ffffff; }
+        .app-name { font-size: 11px; margin-top: 6px; text-align: center; font-weight: 500; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+
+        .dock { margin: 15px; padding: 14px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(30px); border-radius: 35px; display: flex; justify-content: space-around; }
+        .home-bar { width: 140px; height: 5px; background: white; border-radius: 5px; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 9999; }
+
+        /* COULEURS */
+        .bg-grey { background: linear-gradient(180deg, #8e8e93, #636366); }
+        .bg-orange { background: linear-gradient(180deg, #ff9500, #d97b00); }
+        .bg-yellow { background: linear-gradient(180deg, #ffcc00, #d5a100); }
+        .bg-black { background: linear-gradient(180deg, #2c2c2e, #111111); }
+        .bg-green { background: linear-gradient(180deg, #34c759, #248a3d); }
+        .bg-blue { background: linear-gradient(180deg, #007aff, #0056b3); }
+        .bg-purple { background: linear-gradient(180deg, #af52de, #7d32a8); }
+        .bg-red { background: linear-gradient(180deg, #ff3b30, #c0261d); }
+        .bg-white { background: linear-gradient(180deg, #f2f2f7, #d1d1d6); }
+        .bg-gold { background: linear-gradient(180deg, #FFD700, #b8860b); }
+    </style>
+</head>
+<body>
+
+    <div class="iphone-screen">
+
+        <div class="status-bar">
+            <span id="top-time">15:08</span>
+            <div>📶 5G 🔋</div>
+        </div>
+        <div class="dynamic-island"></div>
+
+        <!-- ECRAN DE VERROUILLAGE -->
+        <!-- Ce panneau est affiché si l'utilisateur n'est pas connecté -->
+        <div id="lock-screen">
+            <div class="lock-overlay"></div>
+            <div class="lock-top">
+                <div class="lock-date" id="lock-date">Date</div>
+                <div class="lock-time-big" id="lock-time">15:08</div>
+            </div>
+
+            <div class="login-widget">
+                <h3>Authentification Requise</h3>
+                <!-- VRAI LIEN DE REDIRECTION VERS TON BACKEND PHP/NODEJS -->
+                <a href="ton_script_de_connexion_steam.php" class="steam-link">
+                    <svg class="steam-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 12.51c-1.57 0-2.85-1.27-2.85-2.84 0-1.56 1.28-2.84 2.85-2.84 1.57 0 2.85 1.28 2.85 2.84 0 1.57-1.28 2.84-2.85 2.84zM10.51 14.5c-1.42 0-2.58-1.15-2.58-2.57s1.16-2.57 2.58-2.57c1.42 0 2.58 1.15 2.58 2.57s-1.16 2.57-2.58 2.57zm-2.8-5.32c-.93 0-1.69-.76-1.69-1.69s.76-1.69 1.69-1.69 1.69.76 1.69 1.69-.76 1.69-1.69 1.69z"/></svg>
+                    Se connecter via Steam
+                </a>
+            </div>
+        </div>
+
+        <!-- ECRAN D'ACCUEIL (Toutes les applications) -->
+        <div class="home-screen">
+            <div class="app-grid">
+
+                <!-- Panel Admin (Sera géré par ton PHP) -->
+                <div class="app" id="admin-app" style="display: none;">
+                    <div class="app-icon bg-gold"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4z"/></svg></div>
+                    <span class="app-name">Admin</span>
+                </div>
+
+                <!-- Les 14 Applications demandées -->
+                <div class="app"><div class="app-icon bg-grey"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div><span class="app-name">Réglages</span></div>
+                <div class="app"><div class="app-icon bg-orange"><svg viewBox="0 0 24 24"><path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg></div><span class="app-name">Store</span></div>
+                <div class="app"><div class="app-icon bg-orange"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 14H7v-2h10v2zm0-4H7v-2h10v2z"/></svg></div><span class="app-name">Calculatrice</span></div>
+                <div class="app"><div class="app-icon bg-yellow"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg></div><span class="app-name">Notes</span></div>
+                <div class="app"><div class="app-icon bg-black"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231z"/></svg></div><span class="app-name">X</span></div>
+                <div class="app"><div class="app-icon bg-yellow"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg></div><span class="app-name">Snap</span></div>
+                <div class="app"><div class="app-icon bg-green"><svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3z"/></svg></div><span class="app-name">Printers</span></div>
+                <div class="app"><div class="app-icon bg-orange"><svg viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9z"/></svg></div><span class="app-name">Annonces</span></div>
+                <div class="app"><div class="app-icon bg-blue"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4z"/></svg></div><span class="app-name">Sécurité</span></div>
+                <div class="app"><div class="app-icon bg-purple"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3z"/></svg></div><span class="app-name">Famille</span></div>
+                <div class="app"><div class="app-icon bg-red"><svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg></div><span class="app-name">Jeux</span></div>
+                <div class="app"><div class="app-icon bg-grey"><svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12z"/></svg></div><span class="app-name">Gouv.</span></div>
+                <div class="app"><div class="app-icon bg-red"><svg viewBox="0 0 24 24"><path d="M12 11c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></div><span class="app-name">Services</span></div>
+                <div class="app"><div class="app-icon bg-blue"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5z"/></svg></div><span class="app-name">Marley</span></div>
+            </div>
+
+            <!-- DOCK EN BAS -->
+            <div class="dock">
+                <div class="app"><div class="app-icon bg-green"><svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1z"/></svg></div></div>
+                <div class="app"><div class="app-icon bg-green"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9z"/></svg></div></div>
+                <div class="app"><div class="app-icon bg-grey"><svg viewBox="0 0 24 24"><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9z"/></svg></div></div>
+                <div class="app"><div class="app-icon bg-white"><svg viewBox="0 0 24 24" style="fill:#ff2d55;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div></div>
+            </div>
+        </div>
+
+        <div class="home-bar"></div>
+    </div>
+
+    <script>
+        // Horloge temps réel
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            const dateStr = now.toLocaleDateString('fr-FR', options);
+
+            document.getElementById('lock-time').innerText = `${h}:${m}`;
+            document.getElementById('top-time').innerText = `${h}:${m}`;
+            document.getElementById('lock-date').innerText = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        // GESTION DU RETOUR DE TON SCRIPT PHP
+        // Si ton PHP redirige vers "?connected=true" après la connexion Steam :
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('connected') === 'true') {
+            document.getElementById('lock-screen').style.display = 'none'; // Enlève l'écran de verrouillage
+
+            // Si le PHP détecte que le joueur est staff, il peut envoyer "?connected=true&is_staff=true"
+            if (params.get('is_staff') === 'true') {
+                document.getElementById('admin-app').style.display = 'flex';
+            }
+        }
+    </script>
+</body>
+</html>
